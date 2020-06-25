@@ -1,9 +1,12 @@
-package com.shitikov.task4.entity;
+package com.shitikov.task4_1.entity;
 
-import com.shitikov.task4.exception.ProjectException;
+import com.shitikov.task4_1.exception.ProjectException;
+
+import java.util.OptionalInt;
 
 public class CustomArray {
-    private final static int DEFAULT_CAPACITY = 10;
+    private static final int DEFAULT_CAPACITY = 10;
+    private static final int MAX_CAPACITY =10000;
 
     private int[] array;
 
@@ -12,34 +15,58 @@ public class CustomArray {
     }
 
     public CustomArray(int[] array) {
-        this.array = new int[array.length];
+        if (array != null) {
+            this.array = new int[array.length];
 
-        for (int i = 0; i < array.length; i++) {
-            this.array[i] = array[i];
+            for (int i = 0; i < array.length; i++) {
+                this.array[i] = array[i];
+            }
+        } else {
+            this.array = new int[DEFAULT_CAPACITY];
         }
+
     }
 
     public CustomArray(int length) {
-        this.array = new int[length];
+        if (length > 0 && length <= MAX_CAPACITY) {
+            this.array = new int[length];
+        } else {
+            this.array = new int[DEFAULT_CAPACITY];
+        }
     }
 
-    public int[] getArray() {
-        return array;
+    public boolean setElement(int index, int value) {
+        boolean result = false;
+
+        if (isIndexCorrect(index)) {
+            array[index] = value;
+            result = true;
+        }
+        return result;
     }
 
-    public void setArray(int[] array) {
-        this.array = array;
-    }
-
-    public int elementByIndex(int index) throws ProjectException {
-        if (index >= array.length) {
+    public int getElement(int index) throws ProjectException {
+        if (isIndexCorrect(index)) {
+            return array[index];
+        } else {
             throw new ProjectException("index is outside the array");
         }
-        return array[index];
+    }
+
+    public OptionalInt getElementOpt(int index) {
+        return isIndexCorrect(index) ? OptionalInt.of(array[index]) : OptionalInt.empty();
     }
 
     public int length() {
         return array.length;
+    }
+
+    private boolean isIndexCorrect(int index) {
+        boolean result = false;
+        if (index >= 0 && index < array.length) {
+            result = true;
+        }
+        return result;
     }
 
     @Override
@@ -56,7 +83,7 @@ public class CustomArray {
 
         for (int i = 0; i < array.length; i++) {
             if (array[i] != other.array[i])
-                return  false;
+                return false;
         }
         return true;
     }
@@ -81,12 +108,12 @@ public class CustomArray {
         sb.append("array=[");
         for (int i = 0; i < array.length; i++) {
             if (i == array.length - 1) {
-                sb.append(array[i]).append("]");
+                sb.append(array[i]);
                 break;
             }
             sb.append(array[i]).append(",");
         }
-        sb.append('}');
+        sb.append("]}");
         return sb.toString();
     }
 }

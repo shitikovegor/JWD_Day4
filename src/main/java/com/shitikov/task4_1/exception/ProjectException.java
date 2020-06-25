@@ -1,4 +1,4 @@
-package com.shitikov.task4.exception;
+package com.shitikov.task4_1.exception;
 
 public class ProjectException extends Exception{
     public ProjectException() {

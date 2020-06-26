@@ -86,9 +86,9 @@ public class ArraySearchService {
      */
 
     private int maxMinValue(CustomArray customArray, boolean findMax) {
-        int result = findMax ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+        int result = customArray.get(0).getAsInt();
 
-        for (int i = 0; i < customArray.length(); i++) {
+        for (int i = 1; i < customArray.length(); i++) {
             int element = customArray.get(i).getAsInt();
             if (findMax ? (result < element) : (result > element)) {
                 result = element;

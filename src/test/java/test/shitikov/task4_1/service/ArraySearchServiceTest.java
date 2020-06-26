@@ -36,14 +36,20 @@ public class ArraySearchServiceTest {
     public Object[][] createSearchData() {
         Object[] customArrays = createCustomArrays();
         return new Object[][]{{customArrays[0], 1, 5, 10, 4},
-                {customArrays[1], -2, 12, 32, 3}, {customArrays[2], 2, 5, 112, 3},
-                {customArrays[3], 1, 5, 51, -1}};
+                {customArrays[1], -2, 12, 32, 3}};
     }
 
 
     @Test(expectedExceptions = ProjectException.class)
     public void testBinarySearchException() throws ProjectException {
         service.binarySearch(null, 1, 4, 5);
+    }
+
+    @Test(expectedExceptions = ProjectException.class)
+    public void testBinarySearchSortException() throws ProjectException {
+        int[] unsorted = new int[] {2, 5, 4, 1};
+        CustomArray customArray = new CustomArray(unsorted);
+        service.binarySearch(customArray, 1, 4, 5);
     }
 
     @Test(dataProvider = "searchSortArr")

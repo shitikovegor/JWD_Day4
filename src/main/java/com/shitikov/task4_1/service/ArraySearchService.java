@@ -14,8 +14,7 @@ public class ArraySearchService {
             throw new ProjectException(ERROR_MESSAGE);
         }
         if (!isSorted(customArray)) {
-            ArraySortService sortService = new ArraySortService();
-            sortService.sortInsertion(customArray);
+            throw new ProjectException("Array is unsorted");
         }
 
         int firstIndex = (start > -1) ? start : 0;

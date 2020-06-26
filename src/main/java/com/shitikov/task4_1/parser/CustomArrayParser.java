@@ -5,25 +5,22 @@ import com.shitikov.task4_1.exception.ProjectException;
 
 public class CustomArrayParser {
 
-    public CustomArray parseArray(String input) throws ProjectException {
-        if (input.isEmpty()) {
+    public CustomArray parseArray(String data) throws ProjectException {
+        if (data.isEmpty() || data.equals("[]")) {
             throw new ProjectException("No data");
         }
-        String[] numbers = input.split("\\,?\\s+");
-        CustomArray customArray = parseArray(numbers);
+        String[] dataArray = data.replace("[", "").replace("]", "")
+                .split("\\,?\\s+");
 
-        return customArray;
-    }
-
-    public CustomArray parseArray(String[] data) throws ProjectException {
-        try {
-            int[] numbers = new int[data.length];
-            for (int i = 0; i < data.length; i++) {
-                numbers[i] = Integer.parseInt(data[i]);
+        int[] numbers = new int[dataArray.length];
+        for (int i = 0; i < dataArray.length; i++) {
+            try {
+                numbers[i] = Integer.parseInt(dataArray[i]);
+            } catch (NumberFormatException e) {
+                throw new ProjectException("Incorrect parameter");
             }
-            return new CustomArray(numbers);
-        } catch (NumberFormatException e) {
-            throw new ProjectException("Incorrect format of number");
+
         }
+        return new CustomArray(numbers);
     }
 }

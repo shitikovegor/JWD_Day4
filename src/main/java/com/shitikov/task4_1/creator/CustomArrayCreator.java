@@ -10,24 +10,23 @@ public class CustomArrayCreator {
         CustomArray customArray = new CustomArray();
 
         for (int i = 0; i < customArray.length(); i++) {
-            customArray.setElement(i, (int) (Math.random() * 100));
+            customArray.set(i, (int) (Math.random() * 100));
         }
         return customArray;
     }
 
     public CustomArray createArrayFromFile(String fileName) throws ProjectException {
         CustomArrayReader reader = new CustomArrayReader();
-        CustomArrayParser parser = new CustomArrayParser();
 
-        String data = reader.readFileLine(fileName);
-        CustomArray customArray = parser.parseArray(data);
+        String data = reader.readFile(fileName).toString();
+        CustomArray customArray = createArrayFromString(data);
 
         return customArray;
     }
 
-    public CustomArray createArrayFromConsole(String[] consoleArgs) throws ProjectException {
+    public CustomArray createArrayFromString(String input) throws ProjectException {
         CustomArrayParser parser = new CustomArrayParser();
 
-        return parser.parseArray(consoleArgs);
+        return parser.parseArray(input);
     }
 }

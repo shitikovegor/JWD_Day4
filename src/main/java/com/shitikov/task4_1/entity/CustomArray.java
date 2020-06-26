@@ -1,12 +1,10 @@
 package com.shitikov.task4_1.entity;
 
-import com.shitikov.task4_1.exception.ProjectException;
-
 import java.util.OptionalInt;
 
 public class CustomArray {
     private static final int DEFAULT_CAPACITY = 10;
-    private static final int MAX_CAPACITY =10000;
+    private static final int MAX_CAPACITY = 10000;
 
     private int[] array;
 
@@ -24,7 +22,6 @@ public class CustomArray {
         } else {
             this.array = new int[DEFAULT_CAPACITY];
         }
-
     }
 
     public CustomArray(int length) {
@@ -35,7 +32,7 @@ public class CustomArray {
         }
     }
 
-    public boolean setElement(int index, int value) {
+    public boolean set(int index, int value) {
         boolean result = false;
 
         if (isIndexCorrect(index)) {
@@ -45,15 +42,7 @@ public class CustomArray {
         return result;
     }
 
-    public int getElement(int index) throws ProjectException {
-        if (isIndexCorrect(index)) {
-            return array[index];
-        } else {
-            throw new ProjectException("index is outside the array");
-        }
-    }
-
-    public OptionalInt getElementOpt(int index) {
+    public OptionalInt get(int index) {
         return isIndexCorrect(index) ? OptionalInt.of(array[index]) : OptionalInt.empty();
     }
 
@@ -78,12 +67,16 @@ public class CustomArray {
 
         CustomArray other = (CustomArray) obj;
 
-        if (array.length != other.array.length)
-            return false;
-
-        for (int i = 0; i < array.length; i++) {
-            if (array[i] != other.array[i])
+        if (array == null) {
+            return other.array == null;
+        } else {
+            if (array.length != other.array.length)
                 return false;
+
+            for (int i = 0; i < array.length; i++) {
+                if (array[i] != other.array[i])
+                    return false;
+            }
         }
         return true;
     }

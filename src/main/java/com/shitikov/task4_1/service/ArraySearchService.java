@@ -1,45 +1,104 @@
 package com.shitikov.task4_1.service;
 
-import org.jetbrains.annotations.NotNull;
 import com.shitikov.task4_1.entity.CustomArray;
 import com.shitikov.task4_1.exception.ProjectException;
 
 public class ArraySearchService {
+    static final String ERROR_MESSAGE = "Array is null";
     private static final int MAX_FIBONACCI_INDEX = 40;
+    private static final int MAX_THREE_DIGIT = 999;
+    private static final int MIN_THREE_DIGIT = 100;
 
-    public int binarySearch(@NotNull CustomArray customArray, int start, int end, int numberToSearch) throws ProjectException {
+    public int binarySearch(CustomArray customArray, int start, int end, int numberToSearch) throws ProjectException {
+        if (customArray == null) {
+            throw new ProjectException(ERROR_MESSAGE);
+        }
+        if (!isSorted(customArray)) {
+            ArraySortService sortService = new ArraySortService();
+            sortService.sortInsertion(customArray);
+        }
+
         int firstIndex = (start > -1) ? start : 0;
         int lastIndex = (end <= customArray.length()) ? end - 1 : customArray.length() - 1;
 
-        while(firstIndex <= lastIndex) {
+        while (firstIndex <= lastIndex) {
             int middleIndex = firstIndex + (lastIndex - firstIndex) / 2;
 
-            if (customArray.getElement(middleIndex) == numberToSearch) {
+            if (customArray.get(middleIndex).getAsInt() == numberToSearch) {
                 return middleIndex;
-            } else if (customArray.getElement(middleIndex) < numberToSearch) {
+            } else if (customArray.get(middleIndex).getAsInt() < numberToSearch) {
                 firstIndex = middleIndex + 1;
-            } else if (customArray.getElement(middleIndex) > numberToSearch) {
+            } else if (customArray.get(middleIndex).getAsInt() > numberToSearch) {
                 lastIndex = middleIndex - 1;
             }
         }
         return -1;
     }
 
-    public int binarySearchUnsortArray(@NotNull CustomArray customArray, int start, int end, int numberToSearch) throws ProjectException {
-        ArraySortService sortService = new ArraySortService();
-        sortService.sortInsertion(customArray);
-        return binarySearch(customArray, start, end, numberToSearch);
+    public int maxValue(CustomArray customArray) throws ProjectException {
+        if (customArray == null) {
+            throw new ProjectException(ERROR_MESSAGE);
+        }
+        return maxMinValue(customArray, true);
     }
 
-    public int[] findPrimeNumbers(@NotNull CustomArray customArray) throws ProjectException {
-        return findPrimeOrFibonacciNumbers(customArray, true);
+    public int minValue(CustomArray customArray) throws ProjectException {
+        if (customArray == null) {
+            throw new ProjectException(ERROR_MESSAGE);
+        }
+        return maxMinValue(customArray, false);
     }
 
-    public int[] findFibonacciNumbers(CustomArray customArray) throws ProjectException {
-        return findPrimeOrFibonacciNumbers(customArray, false);
+    public int[] primeNumbers(CustomArray customArray) throws ProjectException {
+        if (customArray == null) {
+            throw new ProjectException(ERROR_MESSAGE);
+        }
+        SearchFunction condition = this::isPrime;
+        return findNumbers(customArray, condition);
     }
 
-    private int[] findPrimeOrFibonacciNumbers(CustomArray customArray, boolean primeOrFibonacci) throws ProjectException {
+    public int[] fibonacciNumbers(CustomArray customArray) throws ProjectException {
+        if (customArray == null) {
+            throw new ProjectException(ERROR_MESSAGE);
+        }
+        SearchFunction condition = this::isFibonacci;
+        return findNumbers(customArray, condition);
+    }
+
+    public int[] threeDigitNumbers(CustomArray customArray) throws ProjectException {
+        if (customArray == null) {
+            throw new ProjectException(ERROR_MESSAGE);
+        }
+        SearchFunction condition = this::hasDifferentDigits;
+        return findNumbers(customArray, condition);
+    }
+
+    private boolean isSorted(CustomArray customArray) {
+        for (int i = 1; i < customArray.length(); i++) {
+            if (customArray.get(i - 1).getAsInt() > customArray.get(i).getAsInt()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+     /*
+    if need to find max value - parameter "findMax" is true, if min value - false
+     */
+
+    private int maxMinValue(CustomArray customArray, boolean findMax) {
+        int result = findMax ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+
+        for (int i = 0; i < customArray.length(); i++) {
+            int element = customArray.get(i).getAsInt();
+            if (findMax ? (result < element) : (result > element)) {
+                result = element;
+            }
+        }
+        return result;
+    }
+
+    private int[] findNumbers(CustomArray customArray, SearchFunction searchFunction) {
 
         int length = customArray.length();
         int[] temp = new int[length];
@@ -48,25 +107,19 @@ public class ArraySearchService {
         int tempIndex = 0;
 
         for (int i = 0; i < length; i++) {
-            int arrayElement = customArray.getElement(i);
+            int arrayElement = customArray.get(i).getAsInt();
 
-            if (primeOrFibonacci ? isPrime(arrayElement) : isFibonacci(arrayElement)) {
+            if (searchFunction.apply(arrayElement)) {
                 temp[tempIndex] = arrayElement;
                 tempIndex++;
                 numberOfPrimes++;
             }
         }
         if (numberOfPrimes > 0) {
-            int[] result = new int[numberOfPrimes];
-
-            for (int i = 0; i < result.length; i++) {
-                result[i] = temp[i];
-            }
+            int[] result = fillArray(temp, numberOfPrimes);
             return result;
         } else {
-            String message = primeOrFibonacci ? "No such prime numbers in array." :
-                    "No such fibonacci numbers in array.";
-            throw new ProjectException(message);
+            return new int[0];
         }
     }
 
@@ -93,20 +146,46 @@ public class ArraySearchService {
     }
 
     private boolean isFibonacci(int number) {
-        boolean result = false;
         int fibonacciNumber = 0;
 
-        for (int i = 0; i < MAX_FIBONACCI_INDEX || fibonacciNumber > number; i++) {
+        for (int i = 0; i < MAX_FIBONACCI_INDEX && fibonacciNumber < number; i++) {
+            fibonacciNumber = calculateFibonacci(i);
+
             if (number == fibonacciNumber) {
-                result = true;
-                break;
+                return true;
             }
+        }
+        return false;
+    }
+
+    private int calculateFibonacci(int index) {
+        return (int) ((Math.pow((1 + Math.sqrt(5)) / 2, index) -
+                Math.pow((1 - Math.sqrt(5)) / 2, index)) / Math.sqrt(5));
+    }
+
+    private boolean hasDifferentDigits(int number) {
+        if (Math.abs(number) >= MIN_THREE_DIGIT && Math.abs(number) <= MAX_THREE_DIGIT) {
+            int one = number % 10;
+            int ten = (number / 10) % 10;
+            int hundred = number / 100;
+
+            if (one != ten && one != hundred && ten != hundred) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private int[] fillArray(int[] sourceArray, int length) {
+        int[] result = new int[length];
+
+        for (int i = 0; i < result.length; i++) {
+            result[i] = sourceArray[i];
         }
         return result;
     }
 
-    private int calculateFibonacci(int index) {
-        return (int) ((Math.pow((1 + Math.sqrt(5))/2, index) -
-                Math.pow((1 - Math.sqrt(5))/2, index))/Math.sqrt(5));
+    private interface SearchFunction {
+        boolean apply(int number);
     }
 }

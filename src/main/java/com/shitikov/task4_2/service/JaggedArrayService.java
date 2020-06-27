@@ -8,7 +8,7 @@ import java.util.Comparator;
 public class JaggedArrayService {
 
     public void sortBubble(int[][] arrayForSort, Comparator<int[]> comparator, SortingOrder sortingOrder) throws ProjectException {
-        if (arrayForSort == null || comparator == null || sortingOrder == null) {
+        if (isNull(arrayForSort) || comparator == null || sortingOrder == null) {
             throw new ProjectException("Parameter is incorrect");
         }
 
@@ -23,5 +23,17 @@ public class JaggedArrayService {
                 }
             }
         }
+    }
+
+    private boolean isNull(int[][] arrayCheck) {
+        if (arrayCheck == null) {
+            return true;
+        }
+        for (int i = 0; i < arrayCheck.length; i++) {
+            if (arrayCheck[i] == null) {
+                return true;
+            }
+        }
+        return false;
     }
 }

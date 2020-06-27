@@ -28,6 +28,7 @@ public class JaggedArrayServiceTest {
     @DataProvider(name = "exceptionData")
     public Object[][] createExceptionData() {
         return new Object[][]{{null, new MaxComparator(), SortingOrder.DECREASE},
+                {new int[][]{{1, 2}, null, {2,4,5}}, new MaxComparator(), SortingOrder.DECREASE},
                 {actual, null, SortingOrder.INCREASE},
                 {actual, new MinComparator(), null}};
     }
